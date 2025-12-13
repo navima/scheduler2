@@ -69,7 +69,7 @@ function MainPanel({ room, data, username }: { room: string, username: string, d
 
   return <>
     <div>
-      Username: {username} Room: {room}
+      Room: {room}
     </div>
     <div>
       <table>
@@ -124,27 +124,79 @@ function MainPanel({ room, data, username }: { room: string, username: string, d
 }
 
 export function App() {
-  const username = 'guest_' + Math.floor(Math.random() * 1000)
   const room = window.location.pathname.slice(1)
-  const [data, setData] = useState<RoomData | null>(null)
+  const [username, setUsername] = useState<string | null>(null)
+  const [data, setData] = useState<RoomData>({ userData: [] })
   const [error, setError] = useState<string | null>(null)
+  const [inputUsername, setInputUsername] = useState('')
 
   useEffect(() => {
+    const storedUsername = localStorage.getItem('username')
+    if (storedUsername) {
+      setUsername(storedUsername)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!username) return
+
     fetch(`http://${backendUrl}/room/${room}`)
       .then(response => response.json())
       .then(setData)
       .catch(error => {
         setError('Error fetching room data:' + error)
       })
-  }, [room])
+  }, [room, username])
 
-  if (data) {
-    return <MainPanel room={room} data={data} username={username} />;
+  const handleSetUsername = () => {
+    if (inputUsername.trim()) {
+      localStorage.setItem('username', inputUsername.trim())
+      setUsername(inputUsername.trim())
+      setInputUsername('')
+    }
+  }
+
+  if (!username) {
+    return (
+      <div style={{ padding: '20px' }}>
+        <h2>Enter your username</h2>
+        <input
+          type="text"
+          value={inputUsername}
+          onInput={(e) => setInputUsername((e.target as HTMLInputElement).value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleSetUsername()}
+          placeholder="Username"
+          style={{ padding: '8px', marginRight: '8px' }}
+        />
+        <button onClick={handleSetUsername} style={{ padding: '8px 16px' }}>
+          Set Username
+        </button>
+      </div>
+    )
+  }
+
+  if (data.userData.length === 0 && !error) {
+    return <div>Loading...</div>
   }
 
   if (error) {
     return <div>{error}</div>
   }
 
-  return <div>Loading...</div>
+  const handleLogout = () => {
+    localStorage.removeItem('username')
+    setUsername(null)
+  }
+
+  return (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div>Username: {username}</div>
+        <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} style={{ color: '#1976d2', cursor: 'pointer' }}>
+          Logout
+        </a>
+      </div>
+      <MainPanel room={room} data={data} username={username} />
+    </>
+  );
 }
