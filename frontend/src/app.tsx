@@ -108,8 +108,9 @@ function MainPanel({ room, data, username }: { room: string, username: string, d
             const lastNoteIndex = cells
               .reduce((last, c, i) => c.userDay?.note ? i : last, -1)
 
+            const isCurrentUser = user.username === username
             return (
-              <tr key={user.username}>
+              <tr key={user.username} class={isCurrentUser ? 'current-user-row' : ''}>
                 <td>{user.username}</td>
                 {cells.map(({ index, dateStr, userDay }, cellIndex) => (
                   <StatusCell key={dateStr} userDay={userDay} showNoteIcon={index === lastNoteIndex} date={dateHeaders[cellIndex]} />
