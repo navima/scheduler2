@@ -11,11 +11,9 @@ const Status = {
 type Status = typeof Status[keyof typeof Status]
 
 type UserDayRange = {
-  id: string
   date: string
-  dateEnd: string | undefined
   status: Status
-  note: string
+  note: string | undefined
 }
 
 type UserData = {
@@ -29,9 +27,11 @@ type RoomData = {
 
 const backendUrl = 'localhost:8080'
 
-function StatusCell({ userDay, dateStr, showNoteIcon }: { userDay: UserDayRange | undefined, dateStr: string, showNoteIcon: boolean }) {
+function StatusCell({ userDay, showNoteIcon, date }: { userDay: UserDayRange | undefined, showNoteIcon: boolean, date: Date }) {
+  const isWeekend = date.getDay() === 0 || date.getDay() === 6
+  const cellClass = `status-${userDay?.status || 'unknown'}${isWeekend ? ' weekend' : ''}`
   return (
-    <td title={userDay?.note || ''} class={`status-${userDay?.status || 'unknown'}`}>
+    <td title={userDay?.note || ''} class={cellClass}>
       {showNoteIcon && userDay?.note && <span class="note-mark"></span>}
     </td>
   )
@@ -40,34 +40,33 @@ function StatusCell({ userDay, dateStr, showNoteIcon }: { userDay: UserDayRange 
 function getUserDayForDate(user: UserData, dateStr: string): UserDayRange | undefined {
   return user.days.find(d => {
     const dayDate = new Date(d.date).toISOString().split('T')[0]
-    const dayEndDate = d.dateEnd ? new Date(d.dateEnd).toISOString().split('T')[0] : dayDate
-    return dayDate <= dateStr && dateStr <= dayEndDate
+    return dayDate == dateStr
   })
 }
 
 function MainPanel({ room, data, username }: { room: string, username: string, data: RoomData }) {
   const today = new Date().toISOString().split('T')[0]
   const defaultMaxDay = new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  const maxDay = data.userData.flatMap(ud => ud.days.map(d => d.dateEnd ?? d.date)).reduce((a, b) => a > b ? a : b, defaultMaxDay) ?? defaultMaxDay;
+  const maxDay = data.userData.flatMap(ud => ud.days.map(d => d.date)).reduce((a, b) => a > b ? a : b, defaultMaxDay) ?? defaultMaxDay;
   console.log('Today:', today, 'MaxDay:', maxDay);
-  
+
   // Generate date headers and group by month
   const dateHeaders: Date[] = []
   const monthGroups = new Map<string, Date[]>()
   const startDate = new Date(today)
   const endDate = new Date(maxDay)
-  
+
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const dateCopy = new Date(d)
     dateHeaders.push(dateCopy)
-    
+
     const monthKey = dateCopy.toISOString().slice(0, 7)
     if (!monthGroups.has(monthKey)) {
       monthGroups.set(monthKey, [])
     }
     monthGroups.get(monthKey)!.push(dateCopy)
   }
-  
+
   return <>
     <div>
       Username: {username} Room: {room}
@@ -112,8 +111,8 @@ function MainPanel({ room, data, username }: { room: string, username: string, d
             return (
               <tr key={user.username}>
                 <td>{user.username}</td>
-                {cells.map(({ index, dateStr, userDay }) => (
-                  <StatusCell key={dateStr} userDay={userDay} dateStr={dateStr} showNoteIcon={index === lastNoteIndex} />
+                {cells.map(({ index, dateStr, userDay }, cellIndex) => (
+                  <StatusCell key={dateStr} userDay={userDay} showNoteIcon={index === lastNoteIndex} date={dateHeaders[cellIndex]} />
                 ))}
               </tr>
             )

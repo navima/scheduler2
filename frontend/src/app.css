@@ -31,10 +31,6 @@ th {
   background-color: #424242;
 }
 
-td:nth-child(odd) {
-  opacity: 0.8;
-}
-
 td {
   position: relative;
 }
@@ -49,4 +45,8 @@ td {
   border-top: 5px solid transparent;
   border-right: 5px solid #ffeb3b;
   border-bottom: 5px solid #ffeb3b;
+}
+
+.weekend {
+  opacity: 0.6;
 }
