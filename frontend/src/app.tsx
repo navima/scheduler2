@@ -125,29 +125,57 @@ function MainPanel({ room, data, username }: { room: string, username: string, d
 }
 
 export function App() {
-  const room = window.location.pathname.slice(1)
-  const [username, setUsername] = useState<string | null>(null)
+  const [error, setError] = useState<{ text: string, code: number } | null>(null)
   const [data, setData] = useState<RoomData>({ userData: [] })
-  const [error, setError] = useState<string | null>(null)
-  const [inputUsername, setInputUsername] = useState('')
+  const room = window.location.pathname.slice(1)
+
+  // app state
+  const [roomFound, setRoomFound] = useState(false)
+  const [username, setUsername] = useState<string | null>(localStorage.getItem('username'))
 
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username')
-    if (storedUsername) {
-      setUsername(storedUsername)
-    }
+    fetch(`http://${backendUrl}/room/${room}`)
+      .then(res => {
+        if (res.ok) {
+          return res.json()
+            .then(data => {
+              console.log('Fetched room data:', data)
+              setData(data)
+              setRoomFound(true)
+            })
+        } else {
+          setError({ text: res.statusText, code: res.status })
+        }
+      })
   }, [])
 
-  useEffect(() => {
-    if (!username) return
+  if (!roomFound) {
+    if (error) {
+      return <>
+        <div>{error.code} {error.text}</div>
+        <div>
+          Create room
+          <button onClick={() => {
+            fetch(`http://${backendUrl}/room`, {
+              method: 'POST'
+            }).then(response => {
+              if (response.ok) {
+                return response.json()
+                  .then(room => {
+                    window.location.href = `/${room}`
+                  })
+              } else {
+                setError({ text: response.statusText, code: response.status })
+              }
+            })
+          }}>Create</button>
+        </div>
+      </>
+    }
+    return <div>Loading...</div>
+  }
 
-    fetch(`http://${backendUrl}/room/${room}`)
-      .then(response => response.json())
-      .then(setData)
-      .catch(error => {
-        setError('Error fetching room data:' + error)
-      })
-  }, [room, username])
+  const [inputUsername, setInputUsername] = useState('')
 
   const handleSetUsername = () => {
     if (inputUsername.trim()) {
@@ -160,6 +188,10 @@ export function App() {
   if (!username) {
     return (
       <div style={{ padding: '20px' }}>
+        <h2>Room {room}</h2>
+        <a href="#" onClick={(e) => { e.preventDefault(); window.location.reload(); }} style={{ color: '#1976d2', cursor: 'pointer' }}>
+          Reload Room
+        </a>
         <h2>Enter your username</h2>
         <input
           type="text"
@@ -174,14 +206,6 @@ export function App() {
         </button>
       </div>
     )
-  }
-
-  if (data.userData.length === 0 && !error) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>{error}</div>
   }
 
   const handleLogout = () => {
