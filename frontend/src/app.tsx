@@ -26,7 +26,7 @@ type RoomData = {
   userData: UserData[]
 }
 
-const backendUrl = 'localhost:8080'
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function StatusCell({ userDay, showNoteIcon, date, selectable, onSelect, selected }: { userDay: UserDayRange | undefined, showNoteIcon: boolean, date: Date, selectable?: boolean, onSelect?: (userDay: UserDayRange) => void, selected?: boolean }) {
   const isWeekend = date.getDay() === 0 || date.getDay() === 6
