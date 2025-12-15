@@ -189,8 +189,8 @@ export function App() {
     return (
       <div style={{ padding: '20px' }}>
         <h2>Room {room}</h2>
-        <a href="#" onClick={(e) => { e.preventDefault(); window.location.reload(); }} style={{ color: '#1976d2', cursor: 'pointer' }}>
-          Reload Room
+        <a href="#" onClick={(e) => { e.preventDefault(); window.location.href = '/'; }}>
+          Leave room
         </a>
         <h2>Enter your username</h2>
         <input
