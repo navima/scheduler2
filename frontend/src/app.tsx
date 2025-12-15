@@ -59,6 +59,37 @@ function MainPanel({ room, data: initialData, username }: { room: string, userna
   const [data, setData] = useState<RoomData>(initialData)
   const [paintingStatus, setPaintingStatus] = useState<Status | undefined>(undefined)
 
+  // Save
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const modified = data.userData.find(ud => ud.username === username)?.days.filter(d => d.modified) || []
+      if (modified.length > 0) {
+        console.log('Saving modified data:', modified)
+        fetch(`http://${backendUrl}/room/${room}/user/${username}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(modified.map(d => ({ date: d.date, status: d.status, note: d.note })))
+        }).then(res => {
+          if (res.ok) {
+            // Clear modified flags
+            data.userData.filter(ud => ud.username === username).forEach(user => {
+              user.days.forEach(d => {
+                d.modified = false
+              })
+            })
+            setData({ ...data })
+            console.log('Save successful')
+          } else {
+            console.error('Save failed:', res.statusText)
+          }
+        })
+      }
+    }, 10000)
+    return () => clearTimeout(timer)
+  }, [data])
+
   // Generate date headers and group by month
   const dateHeaders: Date[] = []
   const monthGroups = new Map<string, Date[]>()

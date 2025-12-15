@@ -77,6 +77,11 @@ td {
   filter: brightness(1.2);
 }
 
+.timeslot {
+  touch-action: none; /* Required for pointer events on touch */
+  user-select: none;
+}
+
 .status-picker {
   & .option {
     color: white;
