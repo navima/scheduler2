@@ -65,7 +65,7 @@ function MainPanel({ room, data: initialData, username }: { room: string, userna
       const modified = data.userData.find(ud => ud.username === username)?.days.filter(d => d.modified) || []
       if (modified.length > 0) {
         console.log('Saving modified data:', modified)
-        fetch(`http://${backendUrl}/room/${room}/user/${username}`, {
+        fetch(`http://${backendUrl}/api/room/${room}/user/${username}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -268,7 +268,7 @@ export function App() {
   const [username, setUsername] = useState<string | null>(localStorage.getItem('username'))
 
   useEffect(() => {
-    fetch(`http://${backendUrl}/room/${room}`)
+    fetch(`http://${backendUrl}/api/room/${room}`)
       .then(res => {
         if (res.ok) {
           return res.json()
@@ -290,7 +290,7 @@ export function App() {
         <div>
           Create room
           <button onClick={() => {
-            fetch(`http://${backendUrl}/room`, {
+            fetch(`http://${backendUrl}/api/room`, {
               method: 'POST'
             }).then(response => {
               if (response.ok) {

@@ -1,22 +1,18 @@
 package eu.navima.scheduler2_be.controller;
 
 import eu.navima.scheduler2_be.model.RoomData;
-import eu.navima.scheduler2_be.model.Status;
 import eu.navima.scheduler2_be.model.UserDay;
 import eu.navima.scheduler2_be.repository.RoomRepository;
-import eu.navima.scheduler2_be.repository.UserDayRepository;
 import eu.navima.scheduler2_be.service.RoomService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("room")
+@RequestMapping("/api/room")
 @RequiredArgsConstructor
 public class RoomController {
 

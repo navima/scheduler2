@@ -9,25 +9,22 @@ services:
       POSTGRES_DB: app_db
     volumes:
       - scheduler2_postgres_data:/var/lib/postgresql/data
+
   backend:
-    image: docker.io/library/scheduler2-be:0.0.1-SNAPSHOT # mvn spring-boot:build-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scheduler2-be:latest
     container_name: scheduler2_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://scheduler2_postgres:5432/app_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
     ports:
       - "9267:8080"
     depends_on:
       - postgres
-  frontend:
-    image: nginx:latest
-    container_name: scheduler2_frontend
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    ports:
-      - "3568:80"
 
 volumes:
   scheduler2_postgres_data:
