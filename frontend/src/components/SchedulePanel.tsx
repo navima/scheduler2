@@ -164,7 +164,6 @@ export function SchedulePanel({ roomId, data: initialData, username }: { roomId:
   }
 
   return <>
-    <h2>{data?.name ?? "Room " + roomId}</h2>
     <div>
       <table>
         <thead>

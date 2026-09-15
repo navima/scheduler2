@@ -25,6 +25,7 @@ export function App() {
   const [error, setError] = useState<{ text: string, code: number } | null>(null)
   const [roomData, setRoomData] = useState<RoomData>({ userData: [], name: undefined, id: '' })
   const roomId = window.location.pathname.slice(1)
+  const roomName = roomData.name ?? "Room " + roomId
 
   // app state
   const [roomFound, setRoomFound] = useState(false)
@@ -45,7 +46,7 @@ export function App() {
         }
       })
   }, [])
-  
+
   const handleLogout = () => {
     localStorage.removeItem('username')
     setUsername(null)
@@ -61,37 +62,32 @@ export function App() {
     return <div>Loading...</div>
   }
 
-  const [inputUsername, setInputUsername] = useState('')
-
-  const handleSetUsername = () => {
-    if (inputUsername.trim()) {
-      localStorage.setItem('username', inputUsername.trim())
-      setUsername(inputUsername.trim())
-      setInputUsername('')
-    }
-  }
-
   if (!username) {
-    return (
+    return (<>
+      <TopHeader username={username} roomName={roomName} handleLogout={handleLogout} />
       <div style={{ padding: '20px' }}>
-        <h2>{roomData.name ?? "Room " + roomId}</h2>
-        <a href="#" onClick={(e) => { e.preventDefault(); window.location.href = '/'; }}>
-          Leave room
-        </a>
         <h2>Enter your username</h2>
-        <input
-          type="text"
-          value={inputUsername}
-          onInput={(e) => setInputUsername((e.target as HTMLInputElement).value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSetUsername()}
-          placeholder="Username"
-          style={{ padding: '8px', marginRight: '8px' }}
-        />
-        <button onClick={handleSetUsername} style={{ padding: '8px 16px' }}>
-          Set Username
-        </button>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.currentTarget);
+          const usernameInput = formData.get('username') as string;
+          if (usernameInput.trim()) {
+            localStorage.setItem('username', usernameInput.trim())
+            setUsername(usernameInput.trim())
+          }
+        }}>
+          <input
+            type="text"
+            placeholder="Username"
+            name="username"
+            style={{ padding: '8px', marginRight: '8px' }}
+          />
+          <button type='submit' style={{ padding: '8px 16px' }}>
+            Set Username
+          </button>
+        </form>
       </div>
-    )
+    </>)
   }
 
   if ((roomData as RoomData).userData.find(ud => ud.username === username) === undefined)
@@ -99,7 +95,7 @@ export function App() {
 
   return (
     <>
-      <TopHeader username={username} handleLogout={handleLogout} />
+      <TopHeader username={username} roomName={roomName} handleLogout={handleLogout} />
       <SchedulePanel roomId={roomId} data={roomData} username={username} />
     </>
   );
