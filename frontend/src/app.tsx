@@ -3,6 +3,7 @@ import './app.css'
 import { CreateRoom } from './components/CreateRoom'
 import { type RoomData } from './model';
 import { SchedulePanel } from './components/SchedulePanel';
+import { TopHeader } from './components/TopHeader';
 
 
 // Use current host and protocol for API calls, falling back to env variable for development
@@ -44,10 +45,18 @@ export function App() {
         }
       })
   }, [])
+  
+  const handleLogout = () => {
+    localStorage.removeItem('username')
+    setUsername(null)
+  }
 
   if (!roomFound) {
     if (error) {
-      return <CreateRoom />
+      return <>
+        <TopHeader username={username} handleLogout={handleLogout} />
+        <CreateRoom />
+      </>
     }
     return <div>Loading...</div>
   }
@@ -85,22 +94,12 @@ export function App() {
     )
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('username')
-    setUsername(null)
-  }
-
   if ((roomData as RoomData).userData.find(ud => ud.username === username) === undefined)
     (roomData as RoomData).userData.push({ username: username || 'Guest', days: [] })
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>{username}</div>
-        <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} style={{ color: '#1976d2', cursor: 'pointer' }}>
-          Logout
-        </a>
-      </div>
+      <TopHeader username={username} handleLogout={handleLogout} />
       <SchedulePanel roomId={roomId} data={roomData} username={username} />
     </>
   );

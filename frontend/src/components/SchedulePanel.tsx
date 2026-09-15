@@ -169,7 +169,7 @@ export function SchedulePanel({ roomId, data: initialData, username }: { roomId:
       <table>
         <thead>
           <tr>
-            <th rowSpan={3}>Username</th>
+            <th rowSpan={3}></th>
             {Array.from(monthGroups.entries()).map(([month, dates]) => (
               <th key={month} colSpan={dates.length}>
                 {month}
