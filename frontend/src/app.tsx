@@ -26,7 +26,19 @@ type RoomData = {
   userData: UserData[]
 }
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+// Use current host for API calls, falling back to env variable for development
+const getBackendUrl = () => {
+  const envUrl = import.meta.env.VITE_BACKEND_URL;
+  // If accessing from a non-localhost address, use current host
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Assume backend is on same host with default port 9267
+    return `${window.location.hostname}:9267`;
+  }
+  // Otherwise use env variable (localhost for development)
+  return envUrl || `${window.location.hostname}:9267`;
+};
+
+const backendUrl = getBackendUrl();
 
 function StatusCell({ userDay, showNoteIcon, date, selectable, onSelect, selected }: { userDay: UserDayRange | undefined, showNoteIcon: boolean, date: Date, selectable?: boolean, onSelect?: (userDay: UserDayRange) => void, selected?: boolean }) {
   const isWeekend = date.getDay() === 0 || date.getDay() === 6
