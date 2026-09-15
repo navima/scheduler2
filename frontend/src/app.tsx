@@ -26,16 +26,17 @@ type RoomData = {
   userData: UserData[]
 }
 
-// Use current host for API calls, falling back to env variable for development
+// Use current host and protocol for API calls, falling back to env variable for development
 const getBackendUrl = () => {
   const envUrl = import.meta.env.VITE_BACKEND_URL;
   // If accessing from a non-localhost address, use current host
   if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    // Assume backend is on same host with default port 9267
-    return `${window.location.hostname}:9267`;
+    // Assume backend is on same host with default port 9267, using same protocol
+    const protocol = window.location.protocol.replace(':', '');
+    return `${protocol}://${window.location.hostname}:9267`;
   }
   // Otherwise use env variable (localhost for development)
-  return envUrl || `${window.location.hostname}:9267`;
+  return envUrl || `http://${window.location.hostname}:9267`;
 };
 
 const backendUrl = getBackendUrl();
@@ -77,7 +78,7 @@ function MainPanel({ room, data: initialData, username }: { room: string, userna
       const modified = data.userData.find(ud => ud.username === username)?.days.filter(d => d.modified) || []
       if (modified.length > 0) {
         console.log('Saving modified data:', modified)
-        fetch(`http://${backendUrl}/api/room/${room}/user/${username}`, {
+        fetch(`${backendUrl}/api/room/${room}/user/${username}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -280,7 +281,7 @@ export function App() {
   const [username, setUsername] = useState<string | null>(localStorage.getItem('username'))
 
   useEffect(() => {
-    fetch(`http://${backendUrl}/api/room/${room}`)
+    fetch(`${backendUrl}/api/room/${room}`)
       .then(res => {
         if (res.ok) {
           return res.json()
@@ -302,7 +303,7 @@ export function App() {
         <div>
           Create room
           <button onClick={() => {
-            fetch(`http://${backendUrl}/api/room`, {
+            fetch(`${backendUrl}/api/room`, {
               method: 'POST'
             }).then(response => {
               if (response.ok) {
