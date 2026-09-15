@@ -41,7 +41,7 @@ function StatusPicker({ status, onStatusChange, showEmpty }: StatusPickerProps) 
 
 export function SchedulePanel({ roomId, data: initialData, username }: { roomId: string, username: string, data: RoomData }) {
   const today = new Date().toISOString().split('T')[0]
-  const defaultMaxDay = new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const defaultMaxDay = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const maxDay = initialData.userData.flatMap(ud => ud.days.map(d => d.date)).reduce((a, b) => a > b ? a : b, defaultMaxDay) ?? defaultMaxDay;
   console.log('Today:', today, 'MaxDay:', maxDay);
 
@@ -164,7 +164,7 @@ export function SchedulePanel({ roomId, data: initialData, username }: { roomId:
   }
 
   return <>
-    <div>
+    <div style={{overflowX: 'scroll'}}>
       <table>
         <thead>
           <tr>
