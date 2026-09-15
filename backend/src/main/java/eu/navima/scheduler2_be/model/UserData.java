@@ -17,12 +17,13 @@ import java.util.UUID;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@jakarta.persistence.Table(name = "user_data")
 public class UserData {
 	@Id
 	@GeneratedValue
 	private UUID id;
 	private String username;
-	@OneToMany
+	@OneToMany(mappedBy = "userData", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	private List<UserDay> days;
 	@ManyToOne

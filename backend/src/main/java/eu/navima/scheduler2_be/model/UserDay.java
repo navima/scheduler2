@@ -3,6 +3,8 @@ package eu.navima.scheduler2_be.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -20,11 +22,13 @@ import java.util.UUID;
 @ToString
 @RequiredArgsConstructor
 @Entity
+@jakarta.persistence.Table(name = "user_day")
 public class UserDay {
 	@Id
 	@GeneratedValue
 	private UUID id;
 	private String date;
+	@Enumerated(EnumType.STRING)
 	private Status status;
 	@Nullable
 	private String note;

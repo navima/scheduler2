@@ -20,7 +20,7 @@ import java.util.UUID;
 @ToString
 @RequiredArgsConstructor
 @Entity
-@Table
+@Table(name = "room_data")
 @EntityListeners(AuditingEntityListener.class)
 public class RoomData {
 	@Id
@@ -30,7 +30,7 @@ public class RoomData {
 	private Instant createdAt;
 	@LastModifiedDate
 	private Instant lastModifiedAt;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "roomData", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	private List<UserData> userData;
 
