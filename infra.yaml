@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: scheduler2-be:latest
+    image: scheduler2:latest
     container_name: scheduler2_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://scheduler2_postgres:5432/app_db
