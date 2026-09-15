@@ -76,7 +76,7 @@ export function SchedulePanel({ roomId, data: initialData, username }: { roomId:
           }
         })
       }
-    }, 10000)
+    }, 1000)
     return () => clearTimeout(timer)
   }, [data])
 
