@@ -2,7 +2,7 @@ package eu.navima.scheduler2_be.controller;
 
 import eu.navima.scheduler2_be.model.CreateRoomRequest;
 import eu.navima.scheduler2_be.model.RoomData;
-import eu.navima.scheduler2_be.model.UserDay;
+import eu.navima.scheduler2_be.model.UserDayUpdateRequest;
 import eu.navima.scheduler2_be.repository.RoomRepository;
 import eu.navima.scheduler2_be.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class RoomController {
 
 
 	@PutMapping("/{roomId}/user/{username}")
-	private void updateRoomUserData(@PathVariable UUID roomId, @PathVariable String username, @RequestBody List<UserDay> data) {
+	private void updateRoomUserData(@PathVariable UUID roomId, @PathVariable String username, @RequestBody List<UserDayUpdateRequest> data) {
 		roomService.updateRoomUserData(roomId, username, data);
 	}
 }

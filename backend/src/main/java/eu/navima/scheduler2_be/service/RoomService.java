@@ -4,6 +4,7 @@ import eu.navima.scheduler2_be.model.RoomData;
 import eu.navima.scheduler2_be.model.Status;
 import eu.navima.scheduler2_be.model.UserData;
 import eu.navima.scheduler2_be.model.UserDay;
+import eu.navima.scheduler2_be.model.UserDayUpdateRequest;
 import eu.navima.scheduler2_be.repository.RoomRepository;
 import eu.navima.scheduler2_be.repository.UserDataRepository;
 import eu.navima.scheduler2_be.repository.UserDayRepository;
@@ -25,35 +26,40 @@ public class RoomService {
 	private final UserDataRepository userDataRepository;
 
 	@Transactional
-	public void updateRoomUserData(UUID roomId, String username, List<UserDay> data) {
-		var roomData = roomRepository.findById(roomId).get();
+	public void updateRoomUserData(UUID roomId, String username, List<UserDayUpdateRequest> reqs) {
 		var userData = userDataRepository.findByUsernameAndRoomData_Id(username, roomId)
-				.orElseGet(() -> saveNewUserData(username, roomData));
-		var toDelete = new ArrayList<UserDay>();
-		var toSave = new ArrayList<UserDay>();
-		for (UserDay userDay : data) {
-			if (userDay.getStatus() == Status.unknown) {
-				userDay.setUserData(userData);
-				toDelete.add(userDay);
+				.orElseGet(() -> saveNewUserData(username, roomRepository.findById(roomId).get()));
+		var toDeleteDates = new ArrayList<String>();
+		var toSaveReq = new ArrayList<UserDayUpdateRequest>();
+		var toSaveUserDays = new ArrayList<UserDay>();
+		for (var req : reqs) {
+			if (req.getStatus() == Status.unknown) {
+				toDeleteDates.add(req.getDate());
 			} else {
-				var existingOpt = userDayRepository.findByUserData_RoomData_IdAndUserData_Username_AndDate(roomId, username, userDay.getDate());
-				existingOpt.ifPresentOrElse(existing -> {
-							existing.setStatus(userDay.getStatus());
-							existing.setNote(userDay.getNote());
-							existing.setUserData(userData);
-							userData.getDays().removeIf(existingDay -> existingDay.getDate().equals(userDay.getDate()));
-							toSave.add(existing);
-						},
-						() -> {
-							userDay.setUserData(userData);
-							toSave.add(userDay);
-						});
+				toSaveReq.add(req);
 			}
 		}
+		userDayRepository.deleteAllByUserData_RoomData_IdAndUserData_Username_AndDateIn(roomId, username, toDeleteDates);
 
-		userDayRepository.deleteAllByUserData_RoomData_IdAndUserData_Username_AndDateIn(roomId, username, toDelete.stream().map(UserDay::getDate).toList());
-		userDayRepository.saveAll(toSave);
-		userData.getDays().addAll(toSave);
+		for (var req : toSaveReq) {
+			var existingOpt = userDayRepository.findByUserData_RoomData_IdAndUserData_Username_AndDate(roomId, username, req.getDate());
+			existingOpt.ifPresentOrElse(existing -> {
+				existing.setStatus(req.getStatus());
+				existing.setNote(req.getNote());
+				existing.setUserData(userData);
+				userData.getDays().removeIf(existingDay -> existingDay.getDate().equals(req.getDate()));
+				toSaveUserDays.add(existing);
+			}, () -> {
+				var userDay = new UserDay();
+				userDay.setDate(req.getDate());
+				userDay.setStatus(req.getStatus());
+				userDay.setUserData(userData);
+				toSaveUserDays.add(userDay);
+			});
+		}
+
+		userDayRepository.saveAll(toSaveUserDays);
+		userData.getDays().addAll(toSaveUserDays);
 		userDataRepository.save(userData);
 	}
 
@@ -67,6 +73,5 @@ public class RoomService {
 		roomRepository.save(roomData);
 		return saved;
 	}
-
 
 }
