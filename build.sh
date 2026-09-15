@@ -1,0 +1,1 @@
+docker build -t scheduler2:latest .
