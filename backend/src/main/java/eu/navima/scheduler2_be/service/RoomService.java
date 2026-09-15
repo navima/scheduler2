@@ -47,7 +47,7 @@ public class RoomService {
 				existing.setStatus(req.getStatus());
 				existing.setNote(req.getNote());
 				existing.setUserData(userData);
-				userData.getDays().removeIf(existingDay -> existingDay.getDate().equals(req.getDate()));
+				//userData.getDays().removeIf(existingDay -> existingDay.getDate().equals(req.getDate()));
 				toSaveUserDays.add(existing);
 			}, () -> {
 				var userDay = new UserDay();
