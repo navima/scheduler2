@@ -1,5 +1,6 @@
 package eu.navima.scheduler2_be.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class RoomData {
 	@OneToMany(mappedBy = "roomData", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	private List<UserData> userData;
+	@Nullable
+	private String name;
 
 	@Override
 	public final boolean equals(Object o) {

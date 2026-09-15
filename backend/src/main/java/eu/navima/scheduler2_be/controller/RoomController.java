@@ -1,5 +1,6 @@
 package eu.navima.scheduler2_be.controller;
 
+import eu.navima.scheduler2_be.model.CreateRoomRequest;
 import eu.navima.scheduler2_be.model.RoomData;
 import eu.navima.scheduler2_be.model.UserDay;
 import eu.navima.scheduler2_be.repository.RoomRepository;
@@ -25,8 +26,10 @@ public class RoomController {
 	}
 
 	@PostMapping
-	private UUID makeRoom() {
-		return roomRepository.saveAndFlush(new RoomData()).getId();
+	private RoomData makeRoom(@RequestBody CreateRoomRequest createRoomDTO) {
+		var room = new RoomData();
+		room.setName(createRoomDTO.getName());
+		return roomRepository.saveAndFlush(room);
 	}
 
 

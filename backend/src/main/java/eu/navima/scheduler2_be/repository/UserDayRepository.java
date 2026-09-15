@@ -13,4 +13,6 @@ public interface UserDayRepository extends JpaRepository<UserDay, UUID> {
 	Optional<UserDay> findByUserData_RoomData_IdAndUserData_Username_AndDate(UUID roomId, String username, String date);
 
 	void deleteAllByUserData_RoomData_IdAndUserData_Username_AndDateIn(UUID roomId, String username, List<String> dates);
+
+	Integer deleteAllByDateBefore(String date);
 }
