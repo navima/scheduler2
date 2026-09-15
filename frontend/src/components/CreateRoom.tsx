@@ -8,7 +8,9 @@ export function CreateRoom() {
         e.preventDefault()
 
         const formData = new FormData(e.currentTarget)
-        const roomName = formData.get('roomName')
+        let roomName = formData.get('roomName')
+        if (roomName == '')
+          roomName = null
 
         const response = await fetch(`${backendUrl}/api/room`, {
           method: 'POST',
