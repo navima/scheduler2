@@ -29,14 +29,14 @@ type RoomData = {
 // Use current host and protocol for API calls, falling back to env variable for development
 const getBackendUrl = () => {
   const envUrl = import.meta.env.VITE_BACKEND_URL;
-  // If accessing from a non-localhost address, use current host
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    // Assume backend is on same host with default port 9267, using same protocol
-    const protocol = window.location.protocol.replace(':', '');
-    return `${protocol}://${window.location.hostname}:9267`;
+  // If environment URL is set, use it
+  if (envUrl && envUrl.trim()) {
+    return envUrl;
   }
-  // Otherwise use env variable (localhost for development)
-  return envUrl || `http://${window.location.hostname}:9267`;
+  // Otherwise, use the same host and protocol as the frontend
+  const protocol = window.location.protocol.replace(':', '');
+  const host = window.location.host; // includes port if specified
+  return `${protocol}://${host}`;
 };
 
 const backendUrl = getBackendUrl();
