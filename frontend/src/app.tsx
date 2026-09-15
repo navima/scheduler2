@@ -47,10 +47,7 @@ export function App() {
 
   if (!roomFound) {
     if (error) {
-      return <>
-        <div>{error.code} {error.text}</div>
-        <CreateRoom />
-      </>
+      return <CreateRoom />
     }
     return <div>Loading...</div>
   }
@@ -99,7 +96,7 @@ export function App() {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>Username: {username}</div>
+        <div>{username}</div>
         <a href="#" onClick={(e) => { e.preventDefault(); handleLogout(); }} style={{ color: '#1976d2', cursor: 'pointer' }}>
           Logout
         </a>

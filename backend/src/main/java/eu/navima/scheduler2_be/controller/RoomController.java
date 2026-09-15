@@ -6,10 +6,10 @@ import eu.navima.scheduler2_be.model.UserDay;
 import eu.navima.scheduler2_be.repository.RoomRepository;
 import eu.navima.scheduler2_be.service.RoomService;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -21,8 +21,8 @@ public class RoomController {
 	private final RoomService roomService;
 
 	@GetMapping("/{roomId}")
-	private Optional<RoomData> getRoomData(@PathVariable UUID roomId) {
-		return roomRepository.findById(roomId);
+	private RoomData getRoomData(@PathVariable UUID roomId) {
+		return roomRepository.findById(roomId).orElseThrow();
 	}
 
 	@PostMapping
