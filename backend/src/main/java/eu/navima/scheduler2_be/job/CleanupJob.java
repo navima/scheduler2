@@ -17,7 +17,7 @@ public class CleanupJob {
     
     private final UserDayRepository userDayRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     public void cleanup() {
         var deletedCount = userDayRepository.deleteAllByDateBefore(java.time.LocalDate.now().minus(10, ChronoUnit.DAYS).toString());
