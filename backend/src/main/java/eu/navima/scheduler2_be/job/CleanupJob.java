@@ -2,12 +2,13 @@ package eu.navima.scheduler2_be.job;
 
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import eu.navima.scheduler2_be.repository.UserDayRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,8 +19,8 @@ public class CleanupJob {
     
     private final UserDayRepository userDayRepository;
 
-    @PostConstruct
-    public void init() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void onApplicationReady() {
         cleanup();
     }
 
