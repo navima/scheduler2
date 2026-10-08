@@ -4,6 +4,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.navima.scheduler2_be.repository.UserDayRepository;
 import jakarta.annotation.PostConstruct;
@@ -23,6 +24,7 @@ public class CleanupJob {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
     public void cleanup() {
         var deletedCount = userDayRepository.deleteAllByDateBefore(java.time.LocalDate.now().minus(10, ChronoUnit.DAYS).toString());
         log.info("CleanupJob: Deleted {} old UserDay entries.", deletedCount);
